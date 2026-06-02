@@ -239,7 +239,7 @@ var MONDES = [
 var AMIS = ['🐣','🐰','🦊','🐢','🦔','🐥','🐨','🐧','🦦','🦉','🐲','🦄'];
 
 var COLS=8, ROWS=14, LIGNES_PAR_MONDE=5, VITESSE_BASE=950, VITESSE_PALIER=55;
-var ARK_NIVEAUX=6, ARK_VIES=5, ARK_MAX_BALLES=10;
+var ARK_NIVEAUX=6, ARK_VIES=5, ARK_MAX_BALLES=4;
 
 /* ---- police "briques" 5x5 pour écrire des mots ---- */
 var FONT = {
@@ -309,13 +309,13 @@ function parler(texte){ if(!etat.voix) return; if(!('speechSynthesis' in window)
 
 /* fond etoile */
 var cvEt=$('etoiles'), ctxEt=cvEt.getContext('2d'), etoilesFond=[];
-function initEtoiles(){ cvEt.width=window.innerWidth; cvEt.height=window.innerHeight; etoilesFond=[]; var n=Math.floor((cvEt.width*cvEt.height)/9000); if(n>120)n=120;
+function initEtoiles(){ cvEt.width=window.innerWidth; cvEt.height=window.innerHeight; etoilesFond=[]; var n=Math.floor((cvEt.width*cvEt.height)/16000); if(n>70)n=70;
   for(var i=0;i<n;i++){ etoilesFond.push({x:Math.random()*cvEt.width,y:Math.random()*cvEt.height,r:Math.random()*2.2+0.6,v:Math.random()*0.25+0.05,ph:Math.random()*6.28}); } }
-function dessinEtoiles(){ ctxEt.clearRect(0,0,cvEt.width,cvEt.height); var temps=Date.now()*0.002;
+var _etSkip=0; function dessinEtoiles(){ requestAnimationFrame(dessinEtoiles); _etSkip^=1; if(_etSkip) return; ctxEt.clearRect(0,0,cvEt.width,cvEt.height); var temps=Date.now()*0.002;
   for(var i=0;i<etoilesFond.length;i++){ var e=etoilesFond[i]; e.y+=e.v; if(e.y>cvEt.height+5){ e.y=-5; e.x=Math.random()*cvEt.width; }
     ctxEt.globalAlpha=0.35+0.35*Math.sin(temps+e.ph); ctxEt.fillStyle=i%3===0?'#ffd86b':(i%3===1?'#ff8fc8':'#b388ff');
     ctxEt.beginPath(); ctxEt.arc(e.x,e.y,e.r,0,6.28); ctxEt.fill(); }
-  ctxEt.globalAlpha=1; requestAnimationFrame(dessinEtoiles); }
+  ctxEt.globalAlpha=1; }
 
 /* dessin commun */
 function rectArrondi(ct,x,y,w,h,r,c1,c2){ var grad=ct.createLinearGradient(x,y,x,y+h); grad.addColorStop(0,c1); grad.addColorStop(1,c2); ct.fillStyle=grad;
@@ -414,7 +414,7 @@ function construireNiveau(idx){ ark.briques=[];
   var gridW=size*cols, x0=(ark.larg-gridW)/2, gap=size*0.12;
   for(var r=0;r<rows;r++){ for(var c=0;c<cols;c++){ if(M[r][c]){
     var g=GEMMES[Math.min(GEMMES.length-1,Math.floor((c/cols)*GEMMES.length))];
-    ark.briques.push({ x:x0+c*size, y:topMargin+r*size, w:size-gap, h:size-gap, c1:g.c1, c2:g.c2, vivante:true, cadeau:(Math.random()<0.22) });
+    ark.briques.push({ x:x0+c*size, y:topMargin+r*size, w:size-gap, h:size-gap, c1:g.c1, c2:g.c2, vivante:true, cadeau:(Math.random()<0.12) });
   } } } }
 function demarrerArk(idx){ ark.niveau=idx; ark.actif=true; ark.enPause=false; ark.score=ark.score||0; ark.dernier=0; ark.powerups=[]; ark.partic=[];
   fondPastel(); montrer('ecran-arkanoid'); dimensionnerArk();
@@ -442,7 +442,7 @@ function appliquerBonus(type){
   else if(type==='vie'){ ark.vies=Math.min(9,ark.vies+1); majBarreArk(); parler('Un cœur en plus !'); }
   else { ark.score+=50; }
   sonBonus(); }
-function semerBonus(x,y){ var types=['multi','multi','multi','rapide','rapide','lent','large','vie','etoile'];
+function semerBonus(x,y){ if(ark.powerups.length>=3) return; var types=['multi','rapide','rapide','lent','large','large','vie','etoile'];
   var t=types[Math.floor(Math.random()*types.length)];
   var emoji={multi:'💖',rapide:'⚡',lent:'🐢',large:'🌈',vie:'✨',etoile:'⭐'}[t];
   ark.powerups.push({ x:x,y:y,vy:ark.haut*0.28,type:t,emoji:emoji,r:ark.larg*0.035 }); }
@@ -468,7 +468,7 @@ function majArk(dt){ var s=dt/1000, i, k;
       if(b.x+b.r>br.x && b.x-b.r<br.x+br.w && b.y+b.r>br.y && b.y-b.r<br.y+br.h){ br.vivante=false; ark.score+=10;
         var ox=Math.min(b.x+b.r-br.x, br.x+br.w-(b.x-b.r)); var oy=Math.min(b.y+b.r-br.y, br.y+br.h-(b.y-b.r));
         if(ox<oy){ b.vx=-b.vx; } else { b.vy=-b.vy; }
-        semerParticules(ark.partic, br.x+br.w/2, br.y+br.h/2, 5); sonBrique(); if(br.cadeau){ semerBonus(br.x+br.w/2,br.y+br.h/2); } break; } }
+        if(ark.partic.length<48){ semerParticules(ark.partic, br.x+br.w/2, br.y+br.h/2, 3); } sonBrique(); if(br.cadeau){ semerBonus(br.x+br.w/2,br.y+br.h/2); } break; } }
     if(b.y-b.r>ark.haut){ ark.balls.splice(i,1); } }
   if(ark.balls.length===0 && ark.actif){ perdreVie(); }
   for(var p=ark.powerups.length-1;p>=0;p--){ var pu=ark.powerups[p]; pu.y+=pu.vy*s;
