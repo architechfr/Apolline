@@ -154,6 +154,7 @@
     <p class="sous-titre" id="info-progres">Monde 1 sur 12</p>
     <button class="bouton rose" id="btn-jouer">💎 Gemmes Magiques</button>
     <button class="bouton turq" id="btn-arkanoid">🪄 Casse-briques Licorne</button>
+     <button class="bouton" id="btn-puzzle" style="background:linear-gradient(135deg,#a7e9ff,#56c6ff);box-shadow:0 5px 0 #2a9fd6;color:#06425e;">🧩 Mon puzzle photo</button>
     <button class="bouton dore" id="btn-licornes">🦄 Choisir ma licorne</button>
     <button class="bouton petit" id="btn-collection" style="background:linear-gradient(135deg,#ffcf6b,#ffaa3b);box-shadow:0 5px 0 #d68a1f;color:#6b4e00;">🏆 Ma collection</button>
     <button class="bouton petit" id="btn-carte-anniv" style="background:linear-gradient(135deg,#ffb3e6,#b388ff);box-shadow:0 5px 0 #9a6cd6;">🎂 Ma carte d'anniversaire</button>
@@ -178,6 +179,52 @@
     <div class="commandes"><button class="cmd" id="ark-gauche">◀️</button><button class="cmd tourner large" id="ark-lancer">🚀</button><button class="cmd" id="ark-droite">▶️</button></div>
   </div>
 </section>
+
+<section id="ecran-puzzle" class="ecran">
+  <div class="ligne-haut">
+    <button class="ico-bouton" id="btn-retour-puzzle">⬅️</button>
+    <span class="bulle" id="etiquette-puzzle">🧩 Puzzle</span>
+    <button class="ico-bouton" id="btn-puzzle-voir">👀</button>
+  </div>
+  <div class="zone-jeu">
+    <canvas id="canvas-puzzle" class="plateau"></canvas>
+    <div class="commandes">
+      <button class="cmd" id="btn-puzzle-melanger">🔀</button>
+      <button class="cmd tourner large" id="btn-puzzle-rejouer">🧩 Nouveau</button>
+      <button class="cmd" id="btn-puzzle-indice">💡</button>
+    </div>
+  </div>
+</section>
+
+<div id="voile-puzzle-setup" class="voile"><div class="pop">
+  <h2>🧩 Mon puzzle photo</h2>
+  <p>Choisis ta photo :</p>
+  <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+    <button class="bouton petit" id="pz-photo-reward">👑 Princesse</button>
+    <button class="bouton petit" id="pz-photo-accueil">😊 Mon avatar</button>
+  </div>
+  <p style="margin-top:10px;">Choisis la difficulté :</p>
+  <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+    <button class="bouton petit" id="pz-diff-facile">🙂 Facile</button>
+    <button class="bouton petit" id="pz-diff-moyen">😃 Moyen</button>
+    <button class="bouton petit" id="pz-diff-expert">🤩 Expert</button>
+  </div>
+  <p id="pz-setup-info" class="mini-note" style="margin-top:8px;">Photo : Princesse · Difficulté : Facile</p>
+  <button class="bouton rose" id="pz-go">🎉 C'est parti !</button>
+  <button class="bouton petit" id="pz-setup-menu">⬅️ Menu</button>
+</div></div>
+
+<div id="voile-puzzle-fin" class="voile"><div class="pop" style="position:relative; overflow:hidden;">
+  <span class="confetti" style="left:10%;animation-delay:0s;">🎊</span>
+  <span class="confetti" style="left:34%;animation-delay:.5s;">⭐</span>
+  <span class="confetti" style="left:58%;animation-delay:.2s;">💖</span>
+  <span class="confetti" style="left:82%;animation-delay:.7s;">🧩</span>
+  <h2>Bravo <span id="pz-fin-nom">Appoline</span> ! 🧩</h2>
+  <img id="pz-fin-img" class="photo-prix" alt="puzzle termine">
+  <p>Tu as reconstitué toute la photo ! 🌈</p>
+  <button class="bouton turq" id="pz-fin-rejouer">🧩 Rejouer</button>
+  <button class="bouton petit" id="pz-fin-menu">⬅️ Menu</button>
+</div></div>
 
 <section id="ecran-collection" class="ecran">
   <div class="ligne-haut"><button class="ico-bouton" id="btn-retour-collection">⬅️</button><span class="bulle">Mes amis magiques</span><span style="width:46px;"></span></div>
@@ -578,6 +625,99 @@ $('avatar-accueil').src=PHOTO_ACCUEIL;
 $('photo-carte').src=PHOTO_REWARD;
 $('photo-finale').src=PHOTO_REWARD;
 majCarte(); initEtoiles(); dessinEtoiles();
+
+/* ============================================================
+   JEU 3 : PUZZLE PHOTO (vraies pieces qui s'emboitent)
+   ============================================================ */
+var cvp=$('canvas-puzzle'), ctxp=cvp.getContext('2d');
+var imgPzReward=new Image(), imgPzAccueil=new Image();
+imgPzReward.src=PHOTO_REWARD; imgPzAccueil.src=PHOTO_ACCUEIL;
+var PZ_DIFF={ facile:{cols:3,rows:4,nom:'Facile (12)'}, moyen:{cols:6,rows:8,nom:'Moyen (48)'}, expert:{cols:10,rows:10,nom:'Expert (100)'} };
+var pz={ actif:false, img:null, cols:3, rows:4, total:0, placees:0, bx:0,by:0,bw:0,bh:0, pw:0,ph:0, pieces:[], drag:null, dx:0,dy:0, indice:true, apercu:false, photo:'reward', diff:'facile' };
+function imgPz(){ return pz.photo==='reward'?imgPzReward:imgPzAccueil; }
+function nomPhotoPz(){ return pz.photo==='reward'?'Princesse':'Avatar'; }
+function ouvrirPuzzle(){ montrer('ecran-puzzle'); fondPastel(); pz.actif=false; ctxp.clearRect(0,0,cvp.width,cvp.height); majSetupPz(); voile('voile-puzzle-setup',true); }
+function majSetupPz(){ $('pz-setup-info').textContent='Photo : '+nomPhotoPz()+' · Difficulté : '+PZ_DIFF[pz.diff].nom; }
+function choisirPhotoPz(x){ pz.photo=x; bip(700,0.08,'triangle',0.05); majSetupPz(); }
+function choisirDiffPz(d){ pz.diff=d; bip(760,0.08,'triangle',0.05); majSetupPz(); }
+function dimensionnerPuzzle(){ var dispoH=window.innerHeight-170, dispoW=window.innerWidth-18;
+  var w=Math.min(dispoW,460); var h=Math.min(dispoH, Math.round(w*1.5)); if(h<320)h=320;
+  cvp.width=Math.floor(w); cvp.height=Math.floor(h);
+  var pad=8, boardMaxW=cvp.width-pad*2, boardMaxH=Math.round(cvp.height*0.56);
+  var ia=(pz.img.naturalWidth/pz.img.naturalHeight)||0.85;
+  var bw=boardMaxW, bh=Math.round(bw/ia);
+  if(bh>boardMaxH){ bh=boardMaxH; bw=Math.round(bh*ia); }
+  pz.bw=bw; pz.bh=bh; pz.bx=Math.round((cvp.width-bw)/2); pz.by=pad; pz.pw=bw/pz.cols; pz.ph=bh/pz.rows; }
+function bordPuzzle(ct,ax,ay,bx,by,s,k){ if(!s){ ct.lineTo(bx,by); return; }
+  var dx=bx-ax,dy=by-ay,L=Math.sqrt(dx*dx+dy*dy),ux=dx/L,uy=dy/L,nx=-uy,ny=ux,o=-s*k;
+  function P(t,of){ return [ax+ux*L*t+nx*of, ay+uy*L*t+ny*of]; }
+  var a=P(0.34,0), b1=P(0.43,o*0.12), c1=P(0.39,o*0.92), d=P(0.5,o*1.0), e=P(0.61,o*0.92), f=P(0.57,o*0.12), g=P(0.66,0);
+  ct.lineTo(a[0],a[1]); ct.bezierCurveTo(b1[0],b1[1],c1[0],c1[1],d[0],d[1]); ct.bezierCurveTo(e[0],e[1],f[0],f[1],g[0],g[1]); ct.lineTo(bx,by); }
+function cheminPiece(ct,M,pw,ph,k,sg){ var x0=M,y0=M,x1=M+pw,y1=M+ph; ct.beginPath(); ct.moveTo(x0,y0);
+  bordPuzzle(ct,x0,y0,x1,y0,sg.t,k); bordPuzzle(ct,x1,y0,x1,y1,sg.r,k); bordPuzzle(ct,x1,y1,x0,y1,sg.b,k); bordPuzzle(ct,x0,y1,x0,y0,sg.l,k); ct.closePath(); }
+function construirePuzzle(){ pz.pieces=[]; pz.placees=0; var cols=pz.cols, rows=pz.rows, pw=pz.pw, ph=pz.ph;
+  var k=Math.max(6,Math.round(Math.min(pw,ph)*0.26)), M=k+2; var vb=[],hb=[],r,c;
+  for(r=0;r<rows;r++){ vb[r]=[]; for(c=0;c<cols-1;c++){ vb[r][c]=Math.random()<0.5?1:-1; } }
+  for(r=0;r<rows-1;r++){ hb[r]=[]; for(c=0;c<cols;c++){ hb[r][c]=Math.random()<0.5?1:-1; } }
+  for(r=0;r<rows;r++){ for(c=0;c<cols;c++){
+    var sg={ t:(r===0?0:-hb[r-1][c]), b:(r===rows-1?0:hb[r][c]), l:(c===0?0:-vb[r][c-1]), r:(c===cols-1?0:vb[r][c]) };
+    var cw=Math.ceil(pw)+M*2, ch=Math.ceil(ph)+M*2; var oc=document.createElement('canvas'); oc.width=cw; oc.height=ch; var oct=oc.getContext('2d');
+    oct.save(); cheminPiece(oct,M,pw,ph,k,sg); oct.clip(); oct.drawImage(pz.img, M-c*pw, M-r*ph, pz.bw, pz.bh); oct.restore();
+    cheminPiece(oct,M,pw,ph,k,sg); oct.lineWidth=1.6; oct.strokeStyle='rgba(255,255,255,.85)'; oct.stroke(); oct.lineWidth=0.7; oct.strokeStyle='rgba(120,70,160,.35)'; oct.stroke();
+    pz.pieces.push({ r:r,c:c, hx:pz.bx+c*pw, hy:pz.by+r*ph, x:0,y:0, M:M, cv:oc, placed:false }); } }
+  pz.total=pz.pieces.length; melangerPuzzle(); }
+function melangerPuzzle(){ var trayTop=pz.by+pz.bh+10, trayBot=cvp.height-pz.ph-6, pad=6; if(trayBot<trayTop+4)trayBot=trayTop+4;
+  for(var i=0;i<pz.pieces.length;i++){ var p=pz.pieces[i]; if(p.placed)continue; p.x=pad+Math.random()*(cvp.width-pz.pw-pad*2); p.y=trayTop+Math.random()*(trayBot-trayTop); }
+  for(var j=pz.pieces.length-1;j>0;j--){ var n=Math.floor(Math.random()*(j+1)); var tmp=pz.pieces[j]; pz.pieces[j]=pz.pieces[n]; pz.pieces[n]=tmp; }
+  dessinerPuzzle(); }
+function dessinerPuzzle(){ ctxp.clearRect(0,0,cvp.width,cvp.height);
+  rectArrondi(ctxp,pz.bx-4,pz.by-4,pz.bw+8,pz.bh+8,12,'rgba(255,255,255,.55)','rgba(255,255,255,.30)');
+  if(pz.indice||pz.apercu){ ctxp.globalAlpha=pz.apercu?0.92:0.20; ctxp.drawImage(pz.img,pz.bx,pz.by,pz.bw,pz.bh); ctxp.globalAlpha=1; }
+  ctxp.strokeStyle='rgba(150,110,190,.18)'; ctxp.lineWidth=1; var i,c2,r2;
+  for(c2=0;c2<=pz.cols;c2++){ ctxp.beginPath(); ctxp.moveTo(pz.bx+c2*pz.pw,pz.by); ctxp.lineTo(pz.bx+c2*pz.pw,pz.by+pz.bh); ctxp.stroke(); }
+  for(r2=0;r2<=pz.rows;r2++){ ctxp.beginPath(); ctxp.moveTo(pz.bx,pz.by+r2*pz.ph); ctxp.lineTo(pz.bx+pz.bw,pz.by+r2*pz.ph); ctxp.stroke(); }
+  for(i=0;i<pz.pieces.length;i++){ var pa=pz.pieces[i]; if(pa.placed){ ctxp.drawImage(pa.cv,pa.x-pa.M,pa.y-pa.M); } }
+  for(i=0;i<pz.pieces.length;i++){ var q=pz.pieces[i]; if(!q.placed && q!==pz.drag){ ctxp.drawImage(q.cv,q.x-q.M,q.y-q.M); } }
+  if(pz.drag){ ctxp.drawImage(pz.drag.cv,pz.drag.x-pz.drag.M,pz.drag.y-pz.drag.M); } }
+function demarrerPuzzle(){ var im=imgPz(); if(!(im.complete&&im.naturalWidth)){ setTimeout(demarrerPuzzle,80); return; }
+  voile('voile-puzzle-setup',false); pz.img=im; pz.cols=PZ_DIFF[pz.diff].cols; pz.rows=PZ_DIFF[pz.diff].rows;
+  pz.indice=(pz.diff!=='expert'); pz.apercu=false; pz.actif=true; pz.drag=null;
+  dimensionnerPuzzle(); construirePuzzle(); majBarrePuzzle(); parler('Glisse les pièces à leur place !'); }
+function majBarrePuzzle(){ $('etiquette-puzzle').textContent='🧩 '+pz.placees+' / '+pz.total; }
+function puzXY(cx,cy){ var r=cvp.getBoundingClientRect(); return { x:(cx-r.left)*(cvp.width/r.width), y:(cy-r.top)*(cvp.height/r.height) }; }
+function piecePuzzleA(px,py){ for(var i=pz.pieces.length-1;i>=0;i--){ var p=pz.pieces[i]; if(p.placed)continue; if(px>=p.x&&px<=p.x+pz.pw&&py>=p.y&&py<=p.y+pz.ph){ return p; } } return null; }
+function debutDragPz(px,py){ if(!pz.actif)return; var p=piecePuzzleA(px,py); if(!p)return; pz.drag=p; pz.dx=px-p.x; pz.dy=py-p.y; dessinerPuzzle(); }
+function moveDragPz(px,py){ if(!pz.drag)return; pz.drag.x=px-pz.dx; pz.drag.y=py-pz.dy; dessinerPuzzle(); }
+function finDragPz(){ if(!pz.drag)return; var p=pz.drag; var snap=Math.max(16,Math.min(pz.pw,pz.ph)*0.5);
+  var d=Math.sqrt((p.x-p.hx)*(p.x-p.hx)+(p.y-p.hy)*(p.y-p.hy));
+  if(d<=snap){ p.x=p.hx; p.y=p.hy; p.placed=true; pz.placees++; majBarrePuzzle(); bip(900,0.09,'sine',0.06); bip(1280,0.08,'sine',0.05);
+    if(pz.placees>=pz.total){ pz.drag=null; gagnerPuzzle(); return; } }
+  pz.drag=null; dessinerPuzzle(); }
+function gagnerPuzzle(){ pz.actif=false; pz.indice=false; pz.apercu=false; dessinerPuzzle(); ctxp.drawImage(pz.img,pz.bx,pz.by,pz.bw,pz.bh);
+  sonVictoire(); try{ etat.puzzleFait=true; sauver(); }catch(e){}
+  $('pz-fin-nom').textContent=etat.prenom||'Appoline'; $('pz-fin-img').src=pz.img.src; voile('voile-puzzle-fin',true); parler('Bravo ! Tu as reconstitué toute la photo !'); }
+cvp.addEventListener('mousedown',function(e){ var q=puzXY(e.clientX,e.clientY); debutDragPz(q.x,q.y); });
+cvp.addEventListener('mousemove',function(e){ if(pz.drag){ var q=puzXY(e.clientX,e.clientY); moveDragPz(q.x,q.y); } });
+window.addEventListener('mouseup',function(){ finDragPz(); });
+cvp.addEventListener('touchstart',function(e){ var t=e.changedTouches[0]; var q=puzXY(t.clientX,t.clientY); debutDragPz(q.x,q.y); if(pz.drag&&e.cancelable)e.preventDefault(); },{passive:false});
+cvp.addEventListener('touchmove',function(e){ if(!pz.drag)return; var t=e.changedTouches[0]; var q=puzXY(t.clientX,t.clientY); moveDragPz(q.x,q.y); if(e.cancelable)e.preventDefault(); },{passive:false});
+cvp.addEventListener('touchend',function(e){ finDragPz(); },{passive:true});
+$('btn-puzzle').onclick=function(){ ctxAudio(); bip(720,0.1,'triangle',0.06); ouvrirPuzzle(); };
+$('btn-retour-puzzle').onclick=function(){ pz.actif=false; montrer('ecran-menu'); };
+$('pz-photo-reward').onclick=function(){ choisirPhotoPz('reward'); };
+$('pz-photo-accueil').onclick=function(){ choisirPhotoPz('accueil'); };
+$('pz-diff-facile').onclick=function(){ choisirDiffPz('facile'); };
+$('pz-diff-moyen').onclick=function(){ choisirDiffPz('moyen'); };
+$('pz-diff-expert').onclick=function(){ choisirDiffPz('expert'); };
+$('pz-go').onclick=function(){ bip(680,0.12,'triangle',0.06); demarrerPuzzle(); };
+$('pz-setup-menu').onclick=function(){ voile('voile-puzzle-setup',false); montrer('ecran-menu'); };
+$('btn-puzzle-rejouer').onclick=function(){ pz.actif=false; majSetupPz(); voile('voile-puzzle-setup',true); };
+$('btn-puzzle-melanger').onclick=function(){ if(pz.actif){ melangerPuzzle(); bip(600,0.08,'square',0.04); } };
+$('btn-puzzle-indice').onclick=function(){ if(pz.actif){ pz.indice=!pz.indice; dessinerPuzzle(); bip(640,0.07,'triangle',0.05); } };
+$('btn-puzzle-voir').onclick=function(){ if(!pz.actif)return; pz.apercu=true; dessinerPuzzle(); setTimeout(function(){ pz.apercu=false; if(pz.actif)dessinerPuzzle(); },1400); };
+$('pz-fin-rejouer').onclick=function(){ voile('voile-puzzle-fin',false); majSetupPz(); voile('voile-puzzle-setup',true); };
+$('pz-fin-menu').onclick=function(){ voile('voile-puzzle-fin',false); montrer('ecran-menu'); };
+
 </script>
 </body>
 </html>
