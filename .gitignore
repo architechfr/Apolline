@@ -4,3 +4,7 @@ desktop.ini
 .DS_Store
 *.tmp
 ~$*
+
+# Photos sources (deja embarquees en base64 dans index.html)
+ChatGPT Image*.png
+*.psd
