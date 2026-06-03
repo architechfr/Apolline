@@ -1,6 +1,6 @@
-# 👑 Le Royaume Magique d'Appoline
+# 👑 Le Royaume Magique d'Apolline
 
-Jeu d'anniversaire offert à Appoline pour ses **7 ans** 🎂
+Jeu d'anniversaire offert à Apolline pour ses **7 ans** 🎂
 Un seul fichier `index.html`, à ouvrir sur n'importe quel téléphone, tablette ou ordinateur.
 
 🔗 **En ligne :** https://architechfr.github.io/Appoline/
@@ -17,7 +17,7 @@ se remplit, la licorne propose simplement de réessayer.
 ### 🪄 Casse-briques Licorne
 Une licorne-raquette qui suit le doigt, une boule-étoile magique, **multi-balles**, 5 vies,
 6 niveaux et plein de bonus qui tombent (🌈 grande licorne, 🐢 ralenti, ✨ cœur en plus,
-⭐ points). À la fin, Appoline gagne **son portrait de princesse magique** 🎉.
+⭐ points). À la fin, Apolline gagne **son portrait de princesse magique** 🎉.
 
 Bonus : carte d'anniversaire personnalisée **imprimable** depuis le menu.
 
@@ -37,7 +37,7 @@ Bonus : carte d'anniversaire personnalisée **imprimable** depuis le menu.
 
 ## 🔒 Vie privée
 
-La photo d'Appoline est **embarquée dans le fichier**. Comme ce dépôt est **public**, l'image
+La photo d'Apolline est **embarquée dans le fichier**. Comme ce dépôt est **public**, l'image
 serait accessible à toute personne connaissant l'URL.
 Options possibles :
 - garder le dépôt public (lien partagé uniquement à la famille proche) ;

@@ -1,4 +1,4 @@
-# PROJET — Anniversaire d'Appoline (7 ans) 🎂
+# PROJET — Anniversaire d'Apolline (7 ans) 🎂
 
 > Document de contexte pour le projet Cowork. Ouvre ce dossier comme projet dans Cowork :
 > ce fichier donne tout le contexte nécessaire pour reprendre le travail.
@@ -7,7 +7,7 @@
 
 ## 🎯 Objectif
 
-Offrir à **Appoline** un jeu web magique et personnalisé pour ses **7 ans**, hébergé sur
+Offrir à **Apolline** un jeu web magique et personnalisé pour ses **7 ans**, hébergé sur
 GitHub Pages, accessible d'un simple lien sur téléphone/tablette.
 
 Thème : princesse + licornes + étoiles, doux, pastel, féérique. Public : enfant de 7 ans
@@ -24,7 +24,7 @@ Il contient **deux jeux** :
 2. **Casse-briques Licorne** (Arkanoid) — licorne-raquette, boule-étoile, **pluie de multi-balles
    (jusqu'à 10)**, 5 vies, 6 niveaux dont **les briques dessinent des mots/formes** (APPOLINE, 7 ANS,
    JOYEUX, BISOUS, un grand cœur, REINE) via une police 5x5 maison. Bonus : 💖 multi, ⚡ accélération,
-   🐢 ralentissement, 🌈 grande licorne, ✨ vie, ⭐ points. Récompense finale = **photo magique d'Appoline**.
+   🐢 ralentissement, 🌈 grande licorne, ✨ vie, ⭐ points. Récompense finale = **photo magique d'Apolline**.
 
 Plus : écran d'accueil avec avatar photo, sélection de 6 licornes, carte d'anniversaire imprimable.
 Les **deux photos** sont compressées et embarquées en base64 (≈ 313 Ko au total).
