@@ -59,7 +59,7 @@ Les **deux photos** sont compressées et embarquées en base64 (≈ 313 Ko au to
 
 ## 🚀 Déploiement
 
-- Cible : dépôt **`architechfr/Appoline`** → GitHub Pages → https://architechfr.github.io/Appoline/
+- Cible : dépôt **`architechfr/Apolline`** → GitHub Pages → https://architechfr.github.io/Apolline/
 - Dossier local de travail : `...\ARCHI-TECH-FR\APPLICATIONS-CLAUDE\Appoline`
 - Lancer `deploy.bat` puis activer Pages (Settings → Pages → branche `main` / root).
 

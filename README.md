@@ -3,7 +3,7 @@
 Jeu d'anniversaire offert à Apolline pour ses **7 ans** 🎂
 Un seul fichier `index.html`, à ouvrir sur n'importe quel téléphone, tablette ou ordinateur.
 
-🔗 **En ligne :** https://architechfr.github.io/Appoline/
+🔗 **En ligne :** https://architechfr.github.io/Apolline/
 
 ---
 
@@ -28,7 +28,7 @@ Bonus : carte d'anniversaire personnalisée **imprimable** depuis le menu.
 1. Place tout le contenu de ce dossier dans `...\APPLICATIONS-CLAUDE\Appoline`.
 2. Double-clique sur **`deploy.bat`** (il fait `git init` + `commit` + `push` automatiquement).
 3. Sur GitHub : **Settings → Pages → Source : Deploy from a branch → `main` / `(root)` → Save**.
-4. Après ~1 minute, le jeu est sur https://architechfr.github.io/Appoline/
+4. Après ~1 minute, le jeu est sur https://architechfr.github.io/Apolline/
 
 > 💡 Si OneDrive crée des conflits de synchro sur le dossier `.git`, mets la synchro OneDrive
 > en pause le temps du `push`.
