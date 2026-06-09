@@ -77,6 +77,10 @@
   .ico-bouton{ pointer-events:auto; width:46px; height:46px; border:none; border-radius:50%; background:rgba(255,255,255,.85);
     border:2px solid #fff; font-size:22px; cursor:pointer; box-shadow:0 4px 12px rgba(124,77,255,.2); display:flex; align-items:center; justify-content:center; }
   .ico-bouton:active{ transform:scale(.92); }
+  .molette-fixe{ position:absolute; top:calc(10px + env(safe-area-inset-top)); right:14px; z-index:6; }
+  .qr-img{ width:230px; height:230px; max-width:78%; display:block; margin:8px auto 8px; border-radius:18px;
+    border:6px solid #fff; background:#fff; box-shadow:0 12px 30px rgba(124,77,255,.35); }
+  .lien-app{ font-weight:700; color:var(--violet-fonce); word-break:break-all; }
 
   #ecran-jeu, #ecran-arkanoid{ padding:0; justify-content:center; }
   .zone-jeu{ display:flex; flex-direction:column; align-items:center; width:100%; height:100%; justify-content:center; }
@@ -149,6 +153,7 @@
 <canvas id="etoiles"></canvas>
 
 <section id="ecran-accueil" class="ecran actif">
+  <button class="ico-bouton molette-fixe" id="btn-reglages-accueil" aria-label="Réglages">⚙️</button>
   <div class="carte-blob">
     <img id="avatar-accueil" class="avatar" alt="Apolline">
     <div class="logo-titre"><span class="emoji-deco">👑🦄✨</span><div class="gros">Le Royaume Magique<br>d'Apolline</div></div>
@@ -162,7 +167,7 @@
 <section id="ecran-menu" class="ecran">
   <div class="ligne-haut">
     <span class="bulle" id="salut-menu">Bonjour !</span>
-    <div><button class="ico-bouton" id="btn-voix">🔊</button><button class="ico-bouton" id="btn-son">🎵</button></div>
+    <div><button class="ico-bouton" id="btn-reglages-menu" aria-label="Réglages">⚙️</button><button class="ico-bouton" id="btn-voix">🔊</button><button class="ico-bouton" id="btn-son">🎵</button></div>
   </div>
   <div class="carte-blob">
     <div class="logo-titre"><div class="gros" style="font-size:28px;">Choisis ton jeu</div></div>
@@ -264,6 +269,16 @@
 <div id="voile-ark-reessai" class="voile"><div class="pop"><span class="grosse-licorne">🦄</span><h2>On réessaie ?</h2><p>Ta licorne est prête pour un nouvel essai magique&nbsp;!</p><button class="bouton turq" id="btn-ark-encore">🌈 Encore !</button><button class="bouton petit" id="btn-ark-quitter" style="background:#e9d6ff;color:var(--texte);box-shadow:0 4px 0 #cdb6ee;">🏠 Retour au menu</button></div></div>
 <div id="voile-ark-niveau" class="voile"><div class="pop"><span class="grosse-licorne">🌟</span><h2>Niveau réussi !</h2><p id="texte-ark-niveau">Toutes les gemmes sont libérées&nbsp;!</p><button class="bouton rose" id="btn-ark-suivant">✨ Niveau suivant ✨</button></div></div>
 <div id="voile-ark-finale" class="voile"><div class="pop" style="position:relative; overflow:hidden;"><span class="confetti" style="left:8%;animation-delay:0s;">🎊</span><span class="confetti" style="left:30%;animation-delay:.5s;">⭐</span><span class="confetti" style="left:55%;animation-delay:.2s;">💖</span><span class="confetti" style="left:78%;animation-delay:.7s;">🦄</span><h2 id="titre-ark-finale">Bravo Apolline ! 👑</h2><img id="photo-finale" class="photo-prix" alt="Apolline princesse"><p>Tu as gagné ton portrait de princesse magique&nbsp;!</p><button class="bouton dore" id="btn-ark-finale-ok">💛 Trop belle !</button><button class="bouton petit" id="btn-ark-finale-garder">💾 Garder la photo</button></div></div>
+<div id="voile-reglages" class="voile"><div class="pop">
+  <span class="grosse-licorne">⚙️</span>
+  <h2>Réglages</h2>
+  <p>Partage le jeu d'Apolline 💖<br>Fais scanner ce QR code :</p>
+  <img class="qr-img" id="qr-reglages" src="qr-apolline.png" alt="QR code pour ouvrir le jeu d'Apolline">
+  <p class="mini-note">Ou copie le lien :<br><span class="lien-app">architechfr.github.io/Apolline</span></p>
+  <button class="bouton turq" id="btn-partager">🔗 Partager le lien</button>
+  <button class="bouton petit" id="btn-fermer-reglages" style="background:#e9d6ff;color:var(--texte);box-shadow:0 4px 0 #cdb6ee;">✖️ Fermer</button>
+</div></div>
+
 <div id="voile-pause" class="voile"><div class="pop"><span class="grosse-licorne">😴</span><h2>Petite pause</h2><button class="bouton turq" id="btn-reprendre">▶️ On continue !</button><button class="bouton petit" id="btn-pause-menu" style="background:#e9d6ff;color:var(--texte);box-shadow:0 4px 0 #cdb6ee;">🏠 Menu</button></div></div>
 
 <script>
@@ -583,6 +598,23 @@ $('btn-retour-collection').onclick=function(){ ouvrirMenu(); };
 $('btn-retour-carte').onclick=function(){ ouvrirMenu(); };
 $('btn-voix').onclick=function(){ etat.voix=!etat.voix; sauver(); majBoutonsOptions(); if(etat.voix){ parler('La voix magique est activée !'); } };
 $('btn-son').onclick=function(){ etat.son=!etat.son; sauver(); majBoutonsOptions(); if(etat.son){ bip(700,0.12,'triangle',0.06); } };
+$('btn-reglages-accueil').onclick=function(){ ouvrirReglages(); };
+$('btn-reglages-menu').onclick=function(){ ouvrirReglages(); };
+$('btn-fermer-reglages').onclick=function(){ voile('voile-reglages',false); };
+$('btn-partager').onclick=function(){ partagerJeu(); };
+function ouvrirReglages(){ try{ bip(720,0.08,'triangle',0.05); }catch(e){} voile('voile-reglages',true); }
+function partagerJeu(){
+  var url='https://architechfr.github.io/Apolline/';
+  var titre="Le Royaume Magique d'Apolline";
+  var txt='Viens jouer au jeu magique d Apolline !';
+  if(navigator.share){ try{ navigator.share({title:titre,text:txt,url:url})['catch'](function(){}); }catch(e){} return; }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(url)['then'](function(){ flashPartage('Lien copié ! 💖'); })['catch'](function(){ window.prompt('Copie le lien :',url); });
+    return;
+  }
+  window.prompt('Copie le lien :',url);
+}
+function flashPartage(msg){ var b=$('btn-partager'); if(!b){ return; } var old=b.innerHTML; b.innerHTML=msg; setTimeout(function(){ b.innerHTML=old; },1600); }
 
 $('cmd-gauche').onclick=function(){ bouger(-1); };
 $('cmd-droite').onclick=function(){ bouger(1); };

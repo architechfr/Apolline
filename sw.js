@@ -1,10 +1,11 @@
 /* Service worker — Le Royaume Magique d'Apolline
    Minimal, ES5. Permet l'installation (PWA) et un fonctionnement hors-ligne. */
-var CACHE = 'apolline-v1';
+var CACHE = 'apolline-v2';
 var ASSETS = [
   './',
   './index.html',
   './manifest.webmanifest',
+  './qr-apolline.png',
   './icon-192.png',
   './icon-512.png',
   './icon-maskable-192.png',
@@ -36,7 +37,6 @@ self.addEventListener('fetch', function (e) {
   var req = e.request;
   if (req.method !== 'GET') { return; }
 
-  // Navigations : réseau d'abord, repli sur le cache (hors-ligne)
   if (req.mode === 'navigate') {
     e.respondWith(
       fetch(req).catch(function () {
@@ -46,7 +46,6 @@ self.addEventListener('fetch', function (e) {
     return;
   }
 
-  // Autres ressources : cache d'abord, puis réseau (et on met en cache)
   e.respondWith(
     caches.match(req).then(function (hit) {
       if (hit) { return hit; }
